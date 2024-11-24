@@ -1,45 +1,68 @@
 
 //Ports de commande du moteur B
-int motor1Pin1 = 8;
-int motor1Pin2 = 9;
-int enable1Pin = 13;
-int motor2Pin1 = 12;
-int motor2Pin2 = 11;
-int enable2Pin = 10;
-int motor3Pin1 = 7;
-int motor3Pin2 = 6;
-int enable3Pin = 5;
-int motor4Pin1 = 3;
-int motor4Pin2 = 2;
-int enable4Pin = 4;
+int motAvDPin1 = 8;
+int motAvDPin2 = 9;
+int motAvDena = 13;
+bool motAvDactive = false;
 
-#define pinA1 A0
-#define pinA2 A1 
+int motArDPin1 = 12;
+int motArDPin2 = 11;
+int motArDena= 10;
+bool motArDactive = false;
+
+int motAvGPin1 = 7;
+int motAvGPin2 = 6;
+int motAvGena = 5;
+bool motAvGactive = true;
+
+int motArGPin1 = 3;
+int motArGPin2 = 2;
+int motArGena = 4;
+bool motArGactive = true;
+
+#define pinA0 A0
+#define pinA1 A1 
 // Vitesse du moteur
 int state = 0;
+int state2 = 0;
 
 void setup() {
     // Configuration des ports en mode "sortie"
-    pinMode(motor1Pin1, OUTPUT);
-    pinMode(motor1Pin2, OUTPUT);
-    pinMode(enable1Pin, OUTPUT);
-    pinMode(motor2Pin1, OUTPUT);
-    pinMode(motor2Pin2, OUTPUT);
-    pinMode(enable2Pin, OUTPUT);
-    pinMode(motor3Pin1, OUTPUT);
-    pinMode(motor3Pin2, OUTPUT);
-    pinMode(enable3Pin, OUTPUT);
-    pinMode(motor4Pin1, OUTPUT);
-    pinMode(motor4Pin2, OUTPUT);
-    pinMode(enable4Pin, OUTPUT);
+    if(motArDactive == true)
+   {  
+      pinMode(motArDPin1, OUTPUT);
+      pinMode(motArDPin2, OUTPUT);
+      pinMode(motArDena, OUTPUT); 
+    }
+    if(motAvDactive == true)
+    {
+      pinMode(motAvDPin1, OUTPUT);
+      pinMode(motAvDPin2, OUTPUT);
+      pinMode(motAvDena, OUTPUT);
+   }
+    
+    
+    pinMode(motAvGPin1, OUTPUT);
+    pinMode(motAvGPin2, OUTPUT);
+    pinMode(motAvGena, OUTPUT);
+    pinMode(motArGPin1, OUTPUT);
+    pinMode(motArGPin2, OUTPUT);
+    pinMode(motArGena, OUTPUT);
+    pinMode(pinA0, INPUT);
     pinMode(pinA1, INPUT);
-    pinMode(pinA2, INPUT);
     // Initialisation du port série
     Serial.begin(9600);
 }
  void loop() {
+  int a0 = analogRead(pinA0);
   int a1 = analogRead(pinA1);
    state = map(a1, 0, 1023, -255, 255);
+   state2 = map(a0, 0, 1023, -255, 255);
+   Serial.print("x = ");
+   Serial.println(a0);
+     
+     
+     
   
    // if (Serial.available() > 0)
     {
@@ -49,54 +72,125 @@ void setup() {
       //
       // Sens du mouvement
       //
-      if (state > 0) // avant
+      
+      if ((state > 0) && (state > state2)) // avant
       {
-        digitalWrite(motor1Pin1, HIGH); 
-        digitalWrite(motor1Pin2, LOW);
+        if(motAvDactive == true)
+        {
+          digitalWrite(motAvDPin1, HIGH); 
+          digitalWrite(motAvDPin2, LOW);
+        }
+
         Serial.print("Avant ");
         Serial.println(state);
-        digitalWrite(motor2Pin1, HIGH); 
-        digitalWrite(motor2Pin2, LOW);
-        digitalWrite(motor3Pin1, HIGH); 
-        digitalWrite(motor3Pin2, LOW);
-        digitalWrite(motor4Pin1, HIGH); 
-        digitalWrite(motor4Pin2, LOW);
+        if(motArDactive == true)
+        {
+            digitalWrite(motArDPin1, HIGH); 
+            digitalWrite(motArDPin2, LOW);
+        }
+
+        if(motAvGactive == true)
+        {
+          digitalWrite(motAvGPin1, HIGH); 
+          digitalWrite(motAvGPin2, LOW);
+        }
+        if(motArGactive == true)
+        {
+          digitalWrite(motArGPin1, HIGH); 
+          digitalWrite(motArGPin2, LOW);
+        }
       }
-      else if (state < 0) // arrière
+      else if ((state < 0) && (state < state2) )// arrière
       {
-        digitalWrite(motor1Pin1, LOW); 
-        digitalWrite(motor1Pin2, HIGH);
-        digitalWrite(motor2Pin1, LOW); 
-        digitalWrite(motor2Pin2, HIGH);
-        digitalWrite(motor3Pin1, LOW); 
-        digitalWrite(motor3Pin2, HIGH);
-        digitalWrite(motor4Pin1, LOW); 
-        digitalWrite(motor4Pin2, HIGH);
-        Serial.print("Avant ");
-        Serial.println(state);
+
+        if(motArDactive == true)
+        {
+          digitalWrite(motArDPin1, LOW); 
+          digitalWrite(motArDPin2, HIGH);  
+        }
+        if(motAvDactive == true)
+        {
+          digitalWrite(motAvDPin1, LOW); 
+          digitalWrite(motAvDPin2, HIGH);
+        }
+        if(motAvGactive == true)
+        {
+        digitalWrite(motAvGPin1, LOW); 
+        digitalWrite(motAvGPin2, HIGH);
+        }
+        if(motArGactive == true)
+        {
+          digitalWrite(motArGPin1, LOW); 
+          digitalWrite(motArGPin2, HIGH);
+        }
         Serial.print("Arriere ");
         Serial.println(state);
       }
+      else if(state2 < 0)
+      {
+      if(motAvGactive == true)
+        {
+        digitalWrite(motAvGPin1, LOW); 
+        digitalWrite(motAvGPin2, HIGH);
+        }
+        if(motArGactive == true)
+        {
+          digitalWrite(motArGPin1, HIGH); 
+          digitalWrite(motArGPin2, LOW);
+        }
+      }
+      else if(state2 > 0)
+      {
+        if(motAvGactive == true)
+        {
+          digitalWrite(motAvGPin1, HIGH); 
+          digitalWrite(motAvGPin2, LOW);
+        }
+        if(motArGactive == true)
+        {
+          digitalWrite(motArGPin1, LOW); 
+          digitalWrite(motArGPin2, HIGH);
+        }
+
+      }
+
       else // Stop (freinage)
       {
-        digitalWrite(motor1Pin1, HIGH); 
-        digitalWrite(motor1Pin2, HIGH);
-        digitalWrite(motor2Pin1, HIGH); 
-        digitalWrite(motor2Pin2, HIGH);
+
+        if(motArDactive == true)
+        {
+          digitalWrite(motArDPin1, HIGH); 
+          digitalWrite(motArDPin2, HIGH);
+        }
+        if(motAvDactive == true)
+        {
+          digitalWrite(motAvDPin1, HIGH); 
+          digitalWrite(motAvDPin2, HIGH);
+        }
         Serial.println("Stop");
       }
 
       //
       // Vitesse du mouvement
       //
-      analogWrite(enable1Pin, abs(state));
-      analogWrite(enable2Pin, abs(state));
-      analogWrite(enable3Pin, abs(state));
-      analogWrite(enable4Pin, abs(state));
+      if(motAvDactive == true)
+      {
+        analogWrite(motAvDena, abs(state));
+      }
+      if(motArDactive == true)
+      {
+        analogWrite(motArDena, abs(state));
+      }
+      if(motAvGactive == true)
+      {
+      analogWrite(motAvGena, abs(state));
+      }
+      if(motArGactive == true)
+      {
+      analogWrite(motArGena, abs(state));
+      }
     }
     delay(100);
-    Serial.println(state);
-     //int a2 = analogRead(pinA2);
-     //a2 = map(a2, 0, 1023, 0, 180);
-    //Serial.println(a2);
+
+    
 }
