@@ -1,4 +1,6 @@
 #include "Arduino.h"
+#include <SerialTransfer.h>
+#include "Wire.h"
 
 //Ports de commande du moteur B
 int motArGPin1 = 8;
