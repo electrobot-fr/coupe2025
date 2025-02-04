@@ -65,8 +65,8 @@ void loop()
 
     int a0 = message.x;
     int a1 = message.y;
-    int state = map(a1, 0, 1023, -250, 250);
-    int state2 = map(a0, 0, 1023, -250, 250);
+    int state = map(a1, 0, 1023, -150, 150);
+    int state2 = map(a0, 0, 1023, -150, 150);
 
     if ((state > 0) && (abs(state) > abs(state2))) // avant
     {
@@ -98,20 +98,6 @@ void loop()
     }
     else if ((state2 < 0) && (abs(state2) > abs(state))) // droite
     {
-      digitalWrite(motAvDPin1, LOW);
-      digitalWrite(motAvDPin2, HIGH);
-
-      digitalWrite(motAvGPin1, HIGH);
-      digitalWrite(motAvGPin2, LOW);
-
-      digitalWrite(motArDPin1, HIGH);
-      digitalWrite(motArDPin2, LOW);
-
-      digitalWrite(motArGPin1, LOW);
-      digitalWrite(motArGPin2, HIGH);
-    }
-    else if ((state2 > 0) && (abs(state2) > abs(state))) // gauche
-    {
       digitalWrite(motAvDPin1, HIGH);
       digitalWrite(motAvDPin2, LOW);
 
@@ -123,6 +109,20 @@ void loop()
 
       digitalWrite(motArGPin1, HIGH);
       digitalWrite(motArGPin2, LOW);
+    }
+    else if ((state2 > 0) && (abs(state2) > abs(state))) // gauche
+    {
+      digitalWrite(motAvDPin1, LOW);
+      digitalWrite(motAvDPin2, HIGH);
+
+      digitalWrite(motAvGPin1, HIGH);
+      digitalWrite(motAvGPin2, LOW);
+
+      digitalWrite(motArDPin1, HIGH);
+      digitalWrite(motArDPin2, LOW);
+
+      digitalWrite(motArGPin1, LOW);
+      digitalWrite(motArGPin2, HIGH);
     }
     else // Stop (freinage)
     {
