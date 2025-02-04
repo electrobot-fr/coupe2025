@@ -6,19 +6,19 @@ SerialTransfer transfer;
 
 int motArGPin1 = 8;
 int motArGPin2 = 9;
-int motArGena = 13;
+int motArGena = 11;
 
 int motArDPin1 = 12;
-int motArDPin2 = 11;
+int motArDPin2 = 13;
 int motArDena = 10;
 
 int motAvDPin1 = 7;
 int motAvDPin2 = 6;
 int motAvDena = 5;
 
-int motAvGPin1 = 3;
+int motAvGPin1 = 4;
 int motAvGPin2 = 2;
-int motAvGena = 4;
+int motAvGena = 3;
 
 #define pinA0 A0
 #define pinA1 A1
