@@ -1,0 +1,87 @@
+#include "Arduino.h"
+#include "Wire.h"
+#include "SerialTransfer.h"
+
+SerialTransfer transfer;
+
+// Structure pour envoyer des données
+struct __attribute__((packed)) STRUCT {
+  int16_t rotx;
+  int16_t roty;
+} message;
+
+void setup() {
+  Serial.begin(115200);
+  transfer.begin(Serial);
+
+  pinMode(A2, INPUT); // Joystick 1 X (Rotation)
+  pinMode(A3, INPUT); // Joystick 1 Y (Rotation)
+}
+
+void loop() {
+  // Lire les positions des deux joysticks
+  message.rotx = analogRead(A2);  // Joystick 1 X (Rotation gauche/droite)
+  message.roty = analogRead(A3);  // Joystick 1 Y (Rotation, si nécessaire)
+
+  // Convertir les valeurs lues pour les utiliser comme directions
+  int xDirection = map(message.x, 0, 1023, -255, 255); // Convertir la lecture X en plage de -255 à 255
+  int yDirection = map(message.y, 0, 1023, -255, 255); // Convertir la lecture Y en plage de -255 à 255
+  int rotXDirection = map(message.rotX, 0, 1023, -255, 255); // Convertir le second joystick X pour la rotation
+
+  // 1. Contrôler le mouvement du robot (avant, arrière, gauche, droite) avec le premier joystick
+  // Cela dépend de votre code existant. Voici un exemple générique :
+
+  if (yDirection < -50) { // Joystick vers le bas => reculer
+    digitalWrite(motorLeftForward, LOW);
+    digitalWrite(motorLeftBackward, HIGH);
+    digitalWrite(motorRightForward, LOW);
+    digitalWrite(motorRightBackward, HIGH);
+  }
+  else if (yDirection > 50) { // Joystick vers le haut => avancer
+    digitalWrite(motorLeftForward, HIGH);
+    digitalWrite(motorLeftBackward, LOW);
+    digitalWrite(motorRightForward, HIGH);
+    digitalWrite(motorRightBackward, LOW);
+  }
+  else if (xDirection < -50) { // Joystick vers la gauche => tourner à gauche
+    digitalWrite(motorLeftForward, LOW);
+    digitalWrite(motorLeftBackward, HIGH);
+    digitalWrite(motorRightForward, HIGH);
+    digitalWrite(motorRightBackward, LOW);
+  }
+  else if (xDirection > 50) { // Joystick vers la droite => tourner à droite
+    digitalWrite(motorLeftForward, HIGH);
+    digitalWrite(motorLeftBackward, LOW);
+    digitalWrite(motorRightForward, LOW);
+    digitalWrite(motorRightBackward, HIGH);
+  }
+
+  //2.
+  if (rotXDirection < -50) { // Joystick 2 vers la gauche => tourner à gauche
+    // Moteurs tournent dans des directions opposées pour tourner sur place à gauche
+    digitalWrite(motorLeftForward, LOW);
+    digitalWrite(motorLeftBackward, HIGH);
+    digitalWrite(motorRightForward, HIGH);
+    digitalWrite(motorRightBackward, LOW);
+  }
+  else if (rotXDirection > 50) { // Joystick 2 vers la droite => tourner à droite
+    // Moteurs tournent dans des directions opposées pour tourner sur place à droite
+    digitalWrite(motorLeftForward, HIGH);
+    digitalWrite(motorLeftBackward, LOW);
+    digitalWrite(motorRightForward, LOW);
+    digitalWrite(motorRightBackward, HIGH);
+  }
+  else { // Joystick 2 centré => arrêter la rotation
+    digitalWrite(motorLeftForward, LOW);
+    digitalWrite(motorLeftBackward, LOW);
+    digitalWrite(motorRightForward, LOW);
+    digitalWrite(motorRightBackward, LOW);
+  }
+
+  // Envoi des données pour le débogage
+  uint16_t sendSize = 0;
+  sendSize = transfer.txObj(message, sendSize);
+  transfer.sendData(sendSize);
+
+  delay(10); 
+}
