@@ -7,6 +7,7 @@ SerialTransfer transfer;
 struct __attribute__((packed)) STRUCT {
   int16_t x;
   int16_t y;
+  int16_t z;
   bool a;
   bool b;
 } message;
@@ -17,11 +18,14 @@ void setup() {
 
   pinMode(A0, INPUT);
   pinMode(A1, INPUT);
+  pinMode(A3, INPUT);
+  pinMode(A2, INPUT);
 }
 
 void loop() {
-  message.x = analogRead(A0);
-  message.y = analogRead(A1);
+  message.x = analogRead(A3);
+  message.y = analogRead(A2);
+  message.z = analogRead(A0);
   message.b = true;
   message.a = true;
 
