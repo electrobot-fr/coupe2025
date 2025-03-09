@@ -6,21 +6,27 @@ SerialTransfer transfer;
 
 #define MaxPwm  (150)
 
-int motArGPin1 = 8;
-int motArGPin2 = 9;
-int motArGena = 11;
+// Ports de commande du moteur
 
-int motArDPin1 = 12;
-int motArDPin2 = 13;
-int motArDena = 10;
-
+// N°1
 int motAvDPin1 = 7;
 int motAvDPin2 = 6;
 int motAvDena = 5;
 
-int motAvGPin1 = 4;
+// N°2
+int motArDPin1 = 12;
+int motArDPin2 = 11;
+int motArDena= 10;
+
+// N°3
+int motAvGPin1 = 3;
 int motAvGPin2 = 2;
 int motAvGena = 3;
+
+// N°4
+int motArGPin1 = 8;
+int motArGPin2 = 9;
+int motArGena = 13;
 
 struct __attribute__((packed)) STRUCT
 {
