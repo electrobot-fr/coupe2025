@@ -4,7 +4,7 @@
 
 SerialTransfer transfer;
 
-#define MaxPwm  (150)
+#define MaxPwm  (200)
 
 int motArGPin1 = 8;
 int motArGPin2 = 9;
