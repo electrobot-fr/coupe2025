@@ -39,8 +39,8 @@
 #include <WiFi.h>
 #include <esp_wifi.h>
 
-#define DEBUG
-#define BOARD2 // BOARD1 or BOARD2
+// #define DEBUG
+#define BOARD1 // BOARD1 or BOARD2
 
 #ifdef BOARD1
 // rien, 1410
@@ -61,6 +61,9 @@
 #define TX_PIN     1 // default UART0 is pin 1 (shared by USB)
 #define RX_PIN     3 // default UART0 is pin 3 (shared by USB)
 #define SER_PARAMS SERIAL_8N1 // SERIAL_8N1: start/stop bits, no parity
+
+#define TX2_PIN     23 // default UART0 is pin 1 (shared by USB)
+#define RX2_PIN     22 // default UART0 is pin 3 (shared by USB)
 
 #define BUFFER_SIZE 250 // max of 250 bytes
 //#define DEBUG // for additional serial messages (may interfere with other messages)
@@ -113,6 +116,7 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
   #endif
   memcpy(&buf_recv, incomingData, sizeof(buf_recv));
   Serial.write(buf_recv, len);
+  Serial2.write(buf_recv, len);
   #ifdef BLINK_ON_RECV
   digitalWrite(LED_BUILTIN, LOW);
   #endif
@@ -125,7 +129,9 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   Serial.begin(BAUD_RATE, SER_PARAMS, RX_PIN, TX_PIN);
+  Serial2.begin(BAUD_RATE, SER_PARAMS, RX2_PIN, TX2_PIN); 
   Serial.println(send_timeout);
+  Serial2.println(send_timeout);
   WiFi.mode(WIFI_STA);
 
   #ifdef DEBUG
