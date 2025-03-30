@@ -10,11 +10,12 @@ struct __attribute__((packed)) STRUCT {
   int16_t x;
   int16_t y;
   int16_t z;
+//  int16_t compteur;
   bool a;
   bool b;
 } message;
 
-int compteur = 0;
+int16_t compteur = 0;
 
 void setup() {
   Serial.begin(115200);
@@ -38,6 +39,7 @@ void loop() {
   message.x = analogRead(A3);
   message.y = analogRead(A2);
   message.z = analogRead(A0);
+  //message.compteur = compteur;
   message.b = true;
   message.a = true;
 

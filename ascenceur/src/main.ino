@@ -1,157 +1,83 @@
-// #include <Arduino.h>
-
-// void setup()
-// {
-//   Serial.begin(9600);
-//   Serial.println("Init");
-//   Serial.setTimeout(100);
-
-//   pinMode(9, OUTPUT); // pompe
-//   pinMode(5, OUTPUT); // valve
-// }
-
-// void loop()
-// {
-//   if (Serial.available() > 0)
-//   {
-//     int cmd = Serial.parseInt();
-//     if (cmd == 1) // aspire
-//     {
-//       digitalWrite(9, HIGH);
-//       digitalWrite(5, LOW);
-//     }
-//     else if (cmd == 2) // relache
-//     {
-//       digitalWrite(9, LOW);
-//       digitalWrite(5, HIGH);
-//       delay(500);
-//       digitalWrite(5, LOW);
-//     }
-//   }
-// }
-
-// #include <AccelStepper.h>
-// #include <Arduino.h>
-
-// AccelStepper stepperX(1, 2, 5);
-// AccelStepper stepperY(1, 3, 6);
-
-// void setup()
-// {
-//   Serial.begin(115200);
-//   Serial.println("Stepper init");
-
-//   pinMode(8, OUTPUT);
-//   digitalWrite(8, LOW);
-
-//   stepperX.setMaxSpeed(7000.0);
-//   stepperX.setAcceleration(6000.0);
-
-//   stepperY.setMaxSpeed(7000.0);
-//   stepperY.setAcceleration(6000.0);
-
-//   Serial.setTimeout(100);
-// }
-
-// void loop()
-// {
-//   if (Serial.available() > 0)
-//   {
-//     String cmd = Serial.readStringUntil('\n');
-//     cmd.trim(); 
-
-//     if (cmd == "RAZX")
-//     {
-//       stepperX.setCurrentPosition(0);
-//       Serial.println("RAZ stepper X");
-//     }
-//     else if (cmd == "X0")
-//     {
-//       stepperX.moveTo(0);
-//       Serial.println("stepper X 0");
-//     }
-//     else if (cmd == "X1")
-//     {
-//       stepperX.moveTo(4000);
-//       Serial.println("stepper X 4000");
-//     }
-//     else if (cmd == "RAZY")
-//     {
-//       stepperY.setCurrentPosition(0);
-//       Serial.println("RAZ stepper Y");
-//     }
-//     else if (cmd == "Y0")
-//     {
-//       stepperY.moveTo(0);
-//       Serial.println("stepper Y 0");
-//     }
-//     else if (cmd == "Y1")
-//     {
-//       stepperY.moveTo(4000);
-//       Serial.println("stepper Y 4000");
-//     }
-//   }
-//   stepperX.run();
-//   stepperY.run();
-// }
-
-// Pinces
 #include <Servo.h>
+#include <string.h>
 #include <Arduino.h>
+#include "Wire.h"
+#include "TM1637Display.h"
+TM1637Display display(3, 2); // CLK, DIO
+#include "SerialTransfer.h"
 
 Servo servoPince;
-Servo servoAcs;
-Servo servoPince2;
-Servo servoAcs2;
+SerialTransfer transfer;
+typedef struct __attribute__((packed)) STRUCT {
+  int16_t x; // base roulante: avance / recule
+  int16_t y; // base roulante: moteur gauche / droite
+  int16_t z; // base roulante: rotation gauche / droite
+  //  int16_t compteur; // compteur pour affichage
+  bool cmdGlissGauche;      // Glissière gauche : 0: retracter / 1: deployer
+  bool cmdGlissDroit;       // Glissière droite
+//  bool cmdAimantIntGauche;  // Pince aimant interieur gauche : 0: détacher / 1: attacher
+//  bool cmdAimantExtGauche;  // Pince aimant exterieur gauche
+//  bool cmdAimantIntDroit;   // Pince aimant interieur droit
+//  bool cmdAimantExtDroit;   // Pince aimant exterieur droit
+//  bool cmdPompe;            // Commande Pompe : 0: Off / 1: On
+//  bool cmdVanne;            // Commande Electrovanne : 0: Off / 1: On
+} messageType;
+
+messageType msg;
+messageType prevMsg;
+int16_t compteur = 0;
+
+Servo servoGlissDroit;
+Servo servoGlissGauche;
+Servo servoAimantIntGauche;
+Servo servoAimantExtGauche;
+Servo servoAimantIntDroit;
+Servo servoAimantExtDroit;
 
 void setup() {
   Serial.begin(115200);
-  servoPince.attach(9);
-  servoAcs.attach(10);
-  servoPince2.attach(8);
-  servoAcs2.attach(11);
+  transfer.begin(Serial);
+  
+  servoGlissGauche.attach(9);
+  servoGlissDroit.attach(10);
+  servoAimantIntGauche.attach(8);
+  servoAimantExtGauche.attach(11);
+  servoAimantIntDroit.attach(12);
+  servoAimantExtDroit.attach(13);
 
-  Serial.println("Servo Control Initialized");
+  //Serial.println("Servo Control Initialized");
 
-  servoAcs.write(90);
-  servoPince.write(90);
-  servoAcs2.write(90);
-  servoPince2.write(90);
+  servoGlissDroit.write(90);
+  servoGlissGauche.write(90);
+  servoAimantIntGauche.write(90);
+  servoAimantExtGauche.write(90);
+  servoAimantIntDroit.write(90);
+  servoAimantExtDroit.write(90);
+
+  // Set brightness of the display
+  display.setBrightness(4);
 }
 
 void loop() {
-  if (Serial.available() > 0) {
-    String cmd = Serial.readStringUntil('\n');
-    cmd.trim(); 
+  String cmd = "";
 
-    if (cmd == "ACS0") {
-      servoAcs.write(90);
-      servoAcs2.write(90);
-      Serial.println("1");
-    }
-    else if (cmd == "ACS1") {
-      servoAcs.write(90 - 20);
-      servoAcs2.write(90 + 20);
-      Serial.println("2");
-    }
-    else if (cmd == "PIN0") {
-      servoPince.write(90);
-      servoPince2.write(90);
-      Serial.println("3");
-    }
-    else if (cmd == "PIN1") {
-      servoPince.write(90- 20);
-      servoPince2.write(90 + 20);
-      Serial.println("4");
+  if (transfer.available())
+  {
+    uint16_t recSize = 0;
+    recSize = transfer.rxObj(msg, recSize);
+
+    if(msg.cmdGlissDroit != prevMsg.cmdGlissDroit)
+    {
+      if(msg.cmdGlissDroit)
+        servoGlissDroit.write(90);
+      else
+        servoGlissDroit.write(90+20);
     }
 
-    // Ensure the angle is within the valid range (0-180 degrees)
-    // if (angle != 0) {
-    //   servoAcs.write(angle);  // Move the servo to the specified angle
-    //   Serial.print("Moving servo to: ");
-    //   Serial.println(angle);
-    // } else {
-    //   Serial.println("Invalid input! Please enter a value between 0 and 180.");
-    // }
+    // Display the updated value on the TM1637 display
+    // display.showNumberDec(message.compteur);
+
+    memcpy(&prevMsg, &msg, sizeof(messageType));
   }
+
 }
