@@ -40,10 +40,11 @@
 #include <esp_wifi.h>
 
 // #define DEBUG
-#define BOARD1 // BOARD1 or BOARD2
+#define BOARD2 
+// BOARD1 (recepteur dans le robot) or BOARD2 (emetteur, telecommande)
 
 #ifdef BOARD1
-// rien, 1410
+// rien, 1410, 
 //#define BLINK_ON_SEND
 #define RECVR_MAC {0x88, 0x13, 0xBF, 0x24, 0x87, 0x20}  // replace with your board's address
 //#define BLINK_ON_SEND_SUCCESS
@@ -58,8 +59,15 @@
 
 #define WIFI_CHAN  13 // 12-13 only legal in US in lower power mode, do not use 14
 #define BAUD_RATE  115200
+
+#ifdef BOARD1
 #define TX_PIN     1 // default UART0 is pin 1 (shared by USB)
 #define RX_PIN     3 // default UART0 is pin 3 (shared by USB)
+#else
+#define TX_PIN     21 // default UART0 is pin 1 (shared by USB)
+#define RX_PIN     19 // default UART0 is pin 3 (shared by USB)
+#endif
+
 #define SER_PARAMS SERIAL_8N1 // SERIAL_8N1: start/stop bits, no parity
 
 #define TX2_PIN     23 // default UART0 is pin 1 (shared by USB)
