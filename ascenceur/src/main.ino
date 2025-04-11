@@ -5,6 +5,8 @@
 #include "TM1637Display.h"
 #include "SerialTransfer.h"
 #include <ServoEasing.hpp>
+#include <AccelStepper.h>
+
 
 struct __attribute__((packed)) STRUCT
 {
@@ -34,6 +36,13 @@ Servo servoAimantExtGauche;
 Servo servoAimantIntDroit;
 Servo servoAimantExtDroit;
 
+#define POMPE 30
+#define VALVE 31
+
+AccelStepper stepperX(1, 34, 36);
+AccelStepper stepperY(1, 35, 37);
+#define ENABLE_STEPPER 38
+
 void setup() {
   Serial.begin(115200); // port USB
   Serial1.begin(115200); // port 19
@@ -50,6 +59,9 @@ void setup() {
   servoAimantIntDroit.attach(12);
   servoAimantExtDroit.attach(13);
 
+  pinMode(POMPE, OUTPUT); // pompe
+  pinMode(VALVE, OUTPUT); // valve
+
   servoGlissGauche.setSpeed(80);
   servoGlissDroit.setSpeed(80);
 
@@ -62,7 +74,17 @@ void setup() {
   servoAimantIntDroit.write(90);
   servoAimantExtDroit.write(0);
 
-  // Set brightness of the display
+  digitalWrite(POMPE, LOW);
+  digitalWrite(VALVE, LOW);
+
+  pinMode(ENABLE_STEPPER, OUTPUT);
+  digitalWrite(ENABLE_STEPPER, LOW);
+   
+  stepperX.setMaxSpeed(7000.0);
+  stepperX.setAcceleration(6000.0);
+  stepperY.setMaxSpeed(7000.0);
+  stepperY.setAcceleration(6000.0);
+
   display.setBrightness(4);
 }
 
@@ -79,25 +101,25 @@ void loop() {
     Serial.print(", y = ");
     Serial.println(message.y);
 
-    if (message.x >= 1000) {
-      servoAimantIntGauche.write(0);
-      servoAimantExtGauche.write(0);
-      servoAimantIntDroit.write(0);
-      servoAimantExtDroit.write(90);
-    } else {
-      servoAimantIntGauche.write(90);
-      servoAimantExtGauche.write(90);
-      servoAimantIntDroit.write(90);
-      servoAimantExtDroit.write(0);
-    }
+    // if (message.x >= 1000) {
+    //   servoAimantIntGauche.write(0);
+    //   servoAimantExtGauche.write(0);
+    //   servoAimantIntDroit.write(0);
+    //   servoAimantExtDroit.write(90);
+    // } else {
+    //   servoAimantIntGauche.write(90);
+    //   servoAimantExtGauche.write(90);
+    //   servoAimantIntDroit.write(90);
+    //   servoAimantExtDroit.write(0);
+    // }
 
-    if (message.y >= 1000) {
-      servoAscDroit.write(90);
-      servoAscGauche.write(120);
-    } else {
-      servoAscDroit.write(150);
-      servoAscGauche.write(60);
-    }
+    // if (message.y >= 1000) {
+    //   servoAscDroit.write(90);
+    //   servoAscGauche.write(120);
+    // } else {
+    //   servoAscDroit.write(150);
+    //   servoAscGauche.write(60);
+    // }
 
     if (message.z >= 1000) {
       servoGlissDroit.startEaseTo(35);
@@ -107,6 +129,19 @@ void loop() {
       servoGlissGauche.startEaseTo(90);
     }
 
+    if (message.y >= 1000) {
+      digitalWrite(POMPE, HIGH);
+      // digitalWrite(VALVE, HIGH);
+    } else {
+      digitalWrite(POMPE, LOW);
+      digitalWrite(VALVE, LOW);
+    }
+
+    if (message.x >= 1000) {
+      stepperX.moveTo(1000);
+    } else {
+      stepperX.moveTo(0);
+    }
     // Display the updated value on the TM1637 display
     // display.showNumberDec(message.compteur);
 
@@ -115,5 +150,8 @@ void loop() {
 
   servoGlissGauche.update();
   servoGlissDroit.update();
+
+  stepperX.run();
+  stepperY.run();
 
 }
