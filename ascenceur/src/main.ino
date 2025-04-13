@@ -13,14 +13,16 @@ struct __attribute__((packed)) STRUCT
   int16_t x;
   int16_t y;
   int16_t z;
-  bool cmdGlissGauche;      // Glissière gauche : 0: retracter / 1: deployer
-  bool cmdGlissDroit;       // Glissière droite
-//  bool cmdAimantIntGauche;  // Pince aimant interieur gauche : 0: détacher / 1: attacher
-//  bool cmdAimantExtGauche;  // Pince aimant exterieur gauche
-//  bool cmdAimantIntDroit;   // Pince aimant interieur droit
-//  bool cmdAimantExtDroit;   // Pince aimant exterieur droit
-//  bool cmdPompe;            // Commande Pompe : 0: Off / 1: On
-//  bool cmdVanne;            // Commande Electrovanne : 0: Off / 1: On
+  bool cmdGliss;         // Glissière : 0: retracter / 1: deployer
+  bool cmdAimantInt;     // Pince aimant interieur 0: détacher / 1: attacher
+  bool cmdAimantExt;     // Pince aimant exterieur
+  bool cmdPompe;         // Commande Pompe : 0: Off / 1: On
+  bool cmdVanne;         // Commande Electrovanne : 0: Off / 1: On
+  bool cmdServoPlanche;  // Lever les planches
+  bool cmdServoBanniere; // Lacher la banniere
+  int16_t ascPlanche;    // Position de l'ascenceur des planches
+  int16_t ascBoites;     // Position de l'ascenceur des boites
+  uint8_t compteur;      // Compteur
 } message;
 
 SerialTransfer transfer;
@@ -101,27 +103,31 @@ void loop() {
     Serial.print(", y = ");
     Serial.println(message.y);
 
-    // if (message.x >= 1000) {
-    //   servoAimantIntGauche.write(0);
-    //   servoAimantExtGauche.write(0);
-    //   servoAimantIntDroit.write(0);
-    //   servoAimantExtDroit.write(90);
-    // } else {
-    //   servoAimantIntGauche.write(90);
-    //   servoAimantExtGauche.write(90);
-    //   servoAimantIntDroit.write(90);
-    //   servoAimantExtDroit.write(0);
-    // }
+    if (message.cmdAimantInt) {
+      servoAimantIntGauche.write(0);
+      servoAimantIntDroit.write(0);
+    } else {
+      servoAimantIntGauche.write(90);
+      servoAimantIntDroit.write(90);
+    }
 
-    // if (message.y >= 1000) {
-    //   servoAscDroit.write(90);
-    //   servoAscGauche.write(120);
-    // } else {
-    //   servoAscDroit.write(150);
-    //   servoAscGauche.write(60);
-    // }
+    if (message.cmdAimantExt) {
+      servoAimantExtGauche.write(0);
+      servoAimantExtDroit.write(90);
+    } else {
+      servoAimantExtGauche.write(90);
+      servoAimantExtDroit.write(0);
+    }
 
-    if (message.z >= 1000) {
+    if (message.cmdServoPlanche) {
+      servoAscDroit.write(90);
+      servoAscGauche.write(120);
+    } else {
+      servoAscDroit.write(150);
+      servoAscGauche.write(60);
+    }
+
+    if (message.cmdGliss) {
       servoGlissDroit.startEaseTo(35);
       servoGlissGauche.startEaseTo(140);
     } else {
@@ -129,23 +135,22 @@ void loop() {
       servoGlissGauche.startEaseTo(90);
     }
 
-    if (message.y >= 1000) {
+    if (message.cmdPompe) {
       digitalWrite(POMPE, HIGH);
-      // digitalWrite(VALVE, HIGH);
     } else {
       digitalWrite(POMPE, LOW);
+    }
+
+    if (message.cmdVanne) {
+      digitalWrite(VALVE, HIGH);
+    } else {
       digitalWrite(VALVE, LOW);
     }
 
-    if (message.x >= 1000) {
-      stepperX.moveTo(1000);
-    } else {
-      stepperX.moveTo(0);
-    }
-    // Display the updated value on the TM1637 display
-    // display.showNumberDec(message.compteur);
+    stepperX.moveTo(message.ascPlanche);
+    stepperY.moveTo(message.ascBoites);
 
-    // memcpy(&prevMsg, &msg, sizeof(messageType));
+    display.showNumberDec(message.compteur);
   }
 
   servoGlissGauche.update();
