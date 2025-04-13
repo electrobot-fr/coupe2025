@@ -27,7 +27,7 @@ struct __attribute__((packed)) STRUCT
 
 SerialTransfer transfer;
 
-TM1637Display display(3, 2); // CLK, DIO
+TM1637Display display(51, 50); // CLK, DIO
 
 ServoEasing servoGlissDroit;
 ServoEasing servoGlissGauche;
@@ -37,6 +37,7 @@ Servo servoAimantIntGauche;
 Servo servoAimantExtGauche;
 Servo servoAimantIntDroit;
 Servo servoAimantExtDroit;
+Servo servoBanniere;
 
 #define POMPE 30
 #define VALVE 31
@@ -48,9 +49,9 @@ AccelStepper stepperY(1, 35, 37);
 void setup() {
   Serial.begin(115200); // port USB
   Serial1.begin(115200); // port 19
-  transfer.begin(Serial1);
+  transfer.begin(Serial);
 
-  Serial.println("Debug port");
+  // Serial.println("Debug port");
 
   servoGlissGauche.attach(7);
   servoGlissDroit.attach(6);  
@@ -60,6 +61,7 @@ void setup() {
   servoAimantExtGauche.attach(11);
   servoAimantIntDroit.attach(12);
   servoAimantExtDroit.attach(13);
+  servoBanniere.attach(46);
 
   pinMode(POMPE, OUTPUT); // pompe
   pinMode(VALVE, OUTPUT); // valve
@@ -67,14 +69,15 @@ void setup() {
   servoGlissGauche.setSpeed(80);
   servoGlissDroit.setSpeed(80);
 
-  servoGlissDroit.write(90);
-  servoGlissGauche.write(90);
+  servoGlissDroit.write(80);
+  servoGlissGauche.write(100);
   servoAscDroit.write(150);
   servoAscGauche.write(60);
   servoAimantIntGauche.write(90);
   servoAimantExtGauche.write(90);
   servoAimantIntDroit.write(90);
   servoAimantExtDroit.write(0);
+  servoBanniere.write(15);
 
   digitalWrite(POMPE, LOW);
   digitalWrite(VALVE, LOW);
@@ -88,6 +91,7 @@ void setup() {
   stepperY.setAcceleration(6000.0);
 
   display.setBrightness(4);
+  display.showNumberDec(42);
 }
 
 void loop() {
@@ -98,10 +102,10 @@ void loop() {
     uint16_t recSize = 0;
     recSize = transfer.rxObj(message, recSize);
 
-    Serial.print("Received: x = ");
-    Serial.print(message.x);
-    Serial.print(", y = ");
-    Serial.println(message.y);
+    // Serial.print("Received: x = ");
+    // Serial.print(message.x);
+    // Serial.print(", y = ");
+    // Serial.println(message.y);
 
     if (message.cmdAimantInt) {
       servoAimantIntGauche.write(0);
@@ -128,11 +132,11 @@ void loop() {
     }
 
     if (message.cmdGliss) {
-      servoGlissDroit.startEaseTo(35);
-      servoGlissGauche.startEaseTo(140);
+      servoGlissDroit.startEaseTo(25);
+      servoGlissGauche.startEaseTo(150);
     } else {
-      servoGlissDroit.startEaseTo(90);
-      servoGlissGauche.startEaseTo(90);
+      servoGlissDroit.startEaseTo(80);
+      servoGlissGauche.startEaseTo(100);
     }
 
     if (message.cmdPompe) {
@@ -145,6 +149,12 @@ void loop() {
       digitalWrite(VALVE, HIGH);
     } else {
       digitalWrite(VALVE, LOW);
+    }
+
+    if (message.cmdServoBanniere) {
+      servoBanniere.write(90);
+    } else {
+      servoBanniere.write(15);
     }
 
     stepperX.moveTo(message.ascPlanche);
