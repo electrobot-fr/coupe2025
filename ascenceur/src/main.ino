@@ -49,7 +49,7 @@ AccelStepper stepperY(1, 35, 37);
 void setup() {
   Serial.begin(115200); // port USB
   Serial1.begin(115200); // port 19
-  transfer.begin(Serial);
+  transfer.begin(Serial1);
 
   // Serial.println("Debug port");
 
