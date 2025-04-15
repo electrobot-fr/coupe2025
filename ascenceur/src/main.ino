@@ -94,6 +94,8 @@ void setup() {
   display.showNumberDec(42);
 }
 
+int compteur = 0;
+
 void loop() {
   String cmd = "";
 
@@ -157,10 +159,13 @@ void loop() {
       servoBanniere.write(15);
     }
 
-    stepperX.moveTo(message.ascPlanche);
     stepperY.moveTo(message.ascBoites);
+    stepperX.moveTo(message.ascPlanche);
 
-    display.showNumberDec(message.compteur);
+    if (compteur != message.compteur) {
+      display.showNumberDec(message.compteur);
+      compteur = message.compteur;
+    }
   }
 
   servoGlissGauche.update();
