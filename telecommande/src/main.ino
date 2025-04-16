@@ -63,8 +63,8 @@ void setup()
 
 void loop()
 {
-  message.x = map(analogRead(A3), 0, 1024, 1024, 0);
-  message.y = analogRead(A2);
+  message.x = analogRead(A3);
+  message.y = map(analogRead(A2), 0, 1024, 1024, 0);
   message.z = analogRead(A0);
   message.compteur = compteur;
 
@@ -114,7 +114,7 @@ void loop()
 #ifdef DEBUG
     Serial.println("bouton 5");
 #endif
-    buttonState--;
+    // buttonState--;
   }
   buttonSeqPrevDown = (digitalRead(9) == LOW);
 
@@ -125,10 +125,10 @@ void loop()
 #endif
   }
 
-  bool buttonBanniere = (digitalRead(8) == LOW);
+  bool buttonBanniere = (digitalRead(10) == LOW);
   if (buttonBanniere && !buttonBannierePrev)
   {
-    message.cmdServoBanniere = true; // Lacher la banniere
+    message.cmdServoBanniere = !message.cmdServoBanniere; // Lacher la banniere
   }
   buttonBannierePrev = buttonBanniere;
 
@@ -183,7 +183,6 @@ void loop()
     message.cmdPompe = false;
     message.ascPlanche = 0;
     message.cmdVanne = false;
-    message.cmdServoBanniere = false;
     break;
   case 2: // descente de planche du haut
     message.cmdPompe = true;
@@ -218,6 +217,7 @@ void loop()
     break;
   case 10: // lache la planche du haut 2
     message.cmdVanne = false;
+    buttonState = 1;
     break;
   }
 
@@ -237,5 +237,5 @@ void loop()
   transfer.sendData(sendSize);
 #endif
 
-  delay(100);
+  delay(50);
 }
