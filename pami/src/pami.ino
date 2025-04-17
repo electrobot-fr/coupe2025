@@ -23,13 +23,25 @@ const int switchPin2 = A1; // choix équipe bleue ou jaune, correspond à Hold s
 // De base, on rentre le chemin de l'équipe jaune. Si c'est l'équipe bleue, alors il faut interchanger chemin2 et 3 et mettre un signe - devant
 
 // int chemin2[] = {0, 100, 132, 100, 0, 100, 0, 100, 0, 300, 264}; // Tableau des positions//
-int chemin2[] = {0, -1150, 0,-80, 365}; // Tableau des positions
+
+#define PAMI1
+
+#ifdef PAMISUPERSTAR
+int chemin2[] = {0, -1150, 0,-80, 365}; 
+int chemin3[] = {0, 1150, 132,+80, -365};// Tableau des positions
+#endif
+
+#ifdef PAMILOIN
+int chemin2[] = {0,-200, -40, -800, 0, -900}; 
+int chemin3[] = { 0, 200, 0, 800, 65, 900};// Tableau des positions
+#endif
+
 //int chemin2[] = {150, 0, 0, ,0}; // Tableau des positions
 
 int tailleChemin2 = sizeof(chemin2) / sizeof(chemin2[0]); // Taille du tableau
 
 // int chemin3[] = {0, -100, 0, -100, -132, -100, -132, -100, -132, -300, 0}; // Tableau des positions
-int chemin3[] = {0, 1150, 132,+80, -365}; // Tableau des positions
+
 // int chemin3[] = {125, 0, 0, 0, 0}; // Tableau des positions
 
 int tailleChemin3 = sizeof(chemin3) / sizeof(chemin3[0]); // Taille du tableau
