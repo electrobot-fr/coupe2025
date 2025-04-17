@@ -56,6 +56,8 @@ void setup()
   pinMode(9, INPUT_PULLUP);  // Button 2 to subtract 1
   pinMode(10, INPUT_PULLUP); // Button 3 to add 5
   pinMode(11, INPUT_PULLUP); // Button 4 to subtract 5
+  pinMode(12, INPUT_PULLUP);
+  pinMode(14, INPUT_PULLUP);
   // Set brightness of the display
   display.setBrightness(4);
   // Serial.println("setup ");
@@ -102,26 +104,50 @@ void loop()
 
   if (digitalRead(8) == LOW && !buttonSeqPrevUp)
   {
-#ifdef DEBUG
-    Serial.println("bouton 5");
-#endif
     buttonState++;
+    display.showNumberDec(buttonState);
   }
   buttonSeqPrevUp = (digitalRead(8) == LOW);
 
   if (digitalRead(9) == LOW && !buttonSeqPrevDown)
   {
-#ifdef DEBUG
-    Serial.println("bouton 5");
-#endif
-    // buttonState--;
+    buttonState--;
+    display.showNumberDec(buttonState);
   }
   buttonSeqPrevDown = (digitalRead(9) == LOW);
 
-  if (digitalRead(6) == LOW)
+  if (digitalRead(4) == LOW)
   {
 #ifdef DEBUG
-    Serial.println("bouton 6");
+    Serial.println("bouton 4");
+#endif
+  }
+
+  if (digitalRead(5) == LOW)
+  {
+#ifdef DEBUG
+    Serial.println("bouton 5");
+#endif
+  }
+
+  if (digitalRead(11) == LOW)
+  {
+#ifdef DEBUG
+    Serial.println("bouton 11");
+#endif
+  }
+
+  if (digitalRead(12) == LOW)
+  {
+#ifdef DEBUG
+    Serial.println("bouton 12");
+#endif
+  }
+
+  if (digitalRead(13) == LOW)
+  {
+#ifdef DEBUG
+    Serial.println("bouton 13");
 #endif
   }
 
@@ -226,9 +252,6 @@ void loop()
   {
     compteur = 0;
   }
-
-  // Display the updated value on the TM1637 display
-  display.showNumberDec(buttonState);
 
 #ifndef DEBUG
   // Send the message using SerialTransfer
