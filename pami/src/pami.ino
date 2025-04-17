@@ -24,7 +24,7 @@ const int switchPin2 = A1; // choix équipe bleue ou jaune, correspond à Hold s
 
 // int chemin2[] = {0, 100, 132, 100, 0, 100, 0, 100, 0, 300, 264}; // Tableau des positions//
 
-#define PAMI1
+#define PAMIMILIEU
 
 #ifdef PAMISUPERSTAR
 int chemin2[] = {0, -1150, 0,-80, 365}; 
@@ -34,6 +34,11 @@ int chemin3[] = {0, 1150, 132,+80, -365};// Tableau des positions
 #ifdef PAMILOIN
 int chemin2[] = {0,-200, -40, -800, 0, -900}; 
 int chemin3[] = { 0, 200, 0, 800, 65, 900};// Tableau des positions
+#endif
+
+#ifdef PAMIMILIEU
+int chemin2[] = { 0, 200, 0, 800, 65, 500};// Tableau des positions
+int chemin3[] = {0,-200, -40, -800, 0, -500}; 
 #endif
 
 //int chemin2[] = {150, 0, 0, ,0}; // Tableau des positions
@@ -50,7 +55,7 @@ bool moteurArrete = false;  // Variable pour vérifier si le moteur doit être a
 bool depart = true; // Variable pour reperer si on est sur la position de départ
 bool jaune = true; // Par défaut on suppose que c'est l'équipe jaune
 int currentPos = 0;
-long attente = 88000;
+long attente = 1000;
 
 void setup() {
   pinMode(switchPin1, INPUT_PULLUP); // initialisation pin démarrage robot
