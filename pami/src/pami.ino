@@ -1,4 +1,5 @@
 #include <Servo.h>
+#include <Arduino.h>
 #include <AccelStepper.h>
 
 // parametres pour moteurs pas à pas
