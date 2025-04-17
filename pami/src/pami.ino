@@ -41,6 +41,12 @@ int chemin2[] = { 0, 200, 0, 800, 65, 500};// Tableau des positions
 int chemin3[] = {0,-200, -40, -800, 0, -500}; 
 #endif
 
+#ifdef PAMIPROCHE
+int chemin2[] = {0,-200, 0, -600, -60, -300};
+int chemin3[] = {0, 200, 60, 600, 0, 300};// Tableau des positions
+#endif
+
+
 //int chemin2[] = {150, 0, 0, ,0}; // Tableau des positions
 
 int tailleChemin2 = sizeof(chemin2) / sizeof(chemin2[0]); // Taille du tableau
