@@ -29,6 +29,8 @@ struct __attribute__((packed)) STRUCT
 } message;
 
 int16_t compteur = 0;
+int16_t afficheur = 0;
+int16_t afficheurPrev = 0;
 
 // #define DEBUG
 
@@ -60,7 +62,6 @@ void setup()
   pinMode(14, INPUT_PULLUP);
   // Set brightness of the display
   display.setBrightness(4);
-  // Serial.println("setup ");
 }
 
 void loop()
@@ -68,126 +69,54 @@ void loop()
   message.x = analogRead(A3);
   message.y = map(analogRead(A2), 0, 1024, 1024, 0);
   message.z = analogRead(A0);
-  message.compteur = compteur;
 
-  if (digitalRead(8) == LOW)
+  #ifdef DEBUG
+    TestButtons();
+  #endif
+   //  // Read button states and update compteur value
+   if (digitalRead(13) == LOW)
   {
     compteur = compteur - 5;
   }
 
-  if (digitalRead(9) == LOW)
+  if (digitalRead(12) == LOW)
   {
     compteur = compteur - 1;
   }
 
-  if (digitalRead(10) == LOW)
+  if (digitalRead(5) == LOW)
   {
     compteur = compteur + 1;
   }
 
-  if (digitalRead(11) == LOW)
+  if (digitalRead(4) == LOW)
   {
     compteur = compteur + 5;
   }
+  message.compteur = compteur;
 
-  if (digitalRead(4) == LOW)
-  {
-#ifdef DEBUG
-    Serial.println("bouton 4");
-#endif
-  }
-
-  if (digitalRead(4) == LOW && !buttonSeqPrevUp)
+  if (digitalRead(8) == LOW && !buttonSeqPrevUp)
   {
     buttonState++;
-    display.showNumberDec(buttonState);
   }
-  buttonSeqPrevUp = (digitalRead(4) == LOW);
+  buttonSeqPrevUp = (digitalRead(8) == LOW);
 
-  if (digitalRead(5) == LOW && !buttonSeqPrevDown)
+  if (digitalRead(9) == LOW && !buttonSeqPrevDown)
   {
     buttonState--;
-    display.showNumberDec(buttonState);
   }
-  buttonSeqPrevDown = (digitalRead(5) == LOW);
+  buttonSeqPrevDown = (digitalRead(9) == LOW);
 
-  if (digitalRead(4) == LOW)
-  {
+  // Banniere
+  bool buttonBanniere = (digitalRead(7) == LOW);
+  if (buttonBanniere && !buttonBannierePrev)
+    {
 #ifdef DEBUG
-    Serial.println("bouton 4");
+    Serial.println("banniere");
 #endif
+    message.cmdServoBanniere = !message.cmdServoBanniere; // Lacher la banniere
   }
-
-  if (digitalRead(5) == LOW)
-  {
-#ifdef DEBUG
-    Serial.println("bouton 5");
-#endif
-  }
-
-  if (digitalRead(11) == LOW)
-  {
-#ifdef DEBUG
-    Serial.println("bouton 11");
-#endif
-  }
-
-  if (digitalRead(12) == LOW)
-  {
-#ifdef DEBUG
-    Serial.println("bouton 12");
-#endif
-  }
-
-  if (digitalRead(13) == LOW)
-  {
-#ifdef DEBUG
-    Serial.println("bouton 13");
-#endif
-  }
-
-  message.cmdServoBanniere = (digitalRead(7) == LOW) || (message.x > 700); // Lacher la banniere
-
-  if (digitalRead(7) == LOW)
-  {
-
-#ifdef DEBUG
-    Serial.println("bouton 7");
-#endif
-  }
-
-  if (digitalRead(8) == LOW)
-  {
-#ifdef DEBUG
-    Serial.println("bouton 8");
-#endif
-  }
-
-  if (digitalRead(9) == LOW)
-  {
-#ifdef DEBUG
-    Serial.println("bouton 9");
-#endif
-  }
-
-  if (digitalRead(10) == LOW)
-  {
-#ifdef DEBUG
-    Serial.println("bouton 10");
-#endif
-  }
-
-  if (digitalRead(11) == LOW)
-  {
-#ifdef DEBUG
-    Serial.println("bouton 11");
-#endif
-  }
-
-#ifdef DEBUG
-  // Serial.print("boutonState: ");
-  // Serial.println(buttonState);
-#endif
+  buttonBannierePrev = buttonBanniere;
 
   switch (buttonState)
   {
@@ -235,12 +164,12 @@ void loop()
   case 10: // lache la planche du haut 2
     message.cmdVanne = false;
     buttonState = 1;
-    display.showNumberDec(buttonState);
+    compteur = compteur + 12;
     break;
   }
 
   // Ensure compteur does not go below 0
-  if (compteur < 0)
+  if ((compteur < 0) || (compteur > 800))
   {
     compteur = 0;
   }
@@ -252,5 +181,101 @@ void loop()
   transfer.sendData(sendSize);
 #endif
 
+  afficheur = buttonState * 1000 + compteur;
+
+  if (afficheur != afficheurPrev)
+  {
+    display.showNumberDec(afficheur);
+    delay(50);
+  }
+  afficheurPrev = afficheur;
+
   delay(50);
+}
+
+
+
+
+void TestButtons()
+{
+  if (digitalRead(7) == LOW)
+  {
+    Serial.println("bouton 7");
+  }
+  if (digitalRead(4) == LOW)
+  {
+#ifdef DEBUG
+    Serial.println("bouton 4");
+#endif
+  }
+
+  if (digitalRead(5) == LOW)
+  {
+#ifdef DEBUG
+    Serial.println("bouton 5");
+#endif
+  }
+
+  if (digitalRead(11) == LOW)
+  {
+#ifdef DEBUG
+    Serial.println("bouton 11");
+#endif
+  }
+
+  if (digitalRead(12) == LOW)
+  {
+#ifdef DEBUG
+    Serial.println("bouton 12");
+#endif
+  }
+
+  if (digitalRead(13) == LOW)
+  {
+#ifdef DEBUG
+    Serial.println("bouton 13");
+#endif
+  }
+
+  if (digitalRead(7) == LOW)
+  {
+
+#ifdef DEBUG
+    Serial.println("bouton 7");
+#endif
+  }
+
+  if (digitalRead(8) == LOW)
+  {
+#ifdef DEBUG
+    Serial.println("bouton 8");
+#endif
+  }
+
+  if (digitalRead(9) == LOW)
+  {
+#ifdef DEBUG
+    Serial.println("bouton 9");
+#endif
+  }
+
+  if (digitalRead(10) == LOW)
+  {
+#ifdef DEBUG
+    Serial.println("bouton 10");
+#endif
+  }
+
+  if (digitalRead(11) == LOW)
+  {
+#ifdef DEBUG
+    Serial.println("bouton 11");
+#endif
+  }
+
+#ifdef DEBUG
+  // Serial.print("boutonState: ");
+  // Serial.println(buttonState);
+#endif
+
 }
