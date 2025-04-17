@@ -85,10 +85,10 @@ void setup() {
   pinMode(ENABLE_STEPPER, OUTPUT);
   digitalWrite(ENABLE_STEPPER, LOW);
    
-  stepperX.setMaxSpeed(7000.0);
-  stepperX.setAcceleration(6000.0);
-  stepperY.setMaxSpeed(7000.0);
-  stepperY.setAcceleration(6000.0);
+  stepperX.setMaxSpeed(20000.0);
+  stepperX.setAcceleration(10000.0);
+  stepperY.setMaxSpeed(20000.0);
+  stepperY.setAcceleration(10000.0);
 
   display.setBrightness(4);
   display.showNumberDec(42);

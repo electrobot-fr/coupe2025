@@ -70,29 +70,24 @@ void loop()
   message.z = analogRead(A0);
   message.compteur = compteur;
 
-  //  // Read button states and update compteur value
-  int buttonState1 = digitalRead(8);
-  if (buttonState1 == LOW)
+  if (digitalRead(8) == LOW)
   {
-    compteur = compteur + 1;
+    compteur = compteur - 5;
   }
 
-  int buttonState2 = digitalRead(9);
-  if (buttonState2 == LOW)
+  if (digitalRead(9) == LOW)
   {
     compteur = compteur - 1;
   }
 
-  int buttonState3 = digitalRead(10);
-  if (buttonState3 == LOW)
+  if (digitalRead(10) == LOW)
   {
-    compteur = compteur + 5;
+    compteur = compteur + 1;
   }
 
-  int buttonState4 = digitalRead(11);
-  if (buttonState4 == LOW)
+  if (digitalRead(11) == LOW)
   {
-    compteur = compteur - 5;
+    compteur = compteur + 5;
   }
 
   if (digitalRead(4) == LOW)
@@ -102,19 +97,19 @@ void loop()
 #endif
   }
 
-  if (digitalRead(8) == LOW && !buttonSeqPrevUp)
+  if (digitalRead(4) == LOW && !buttonSeqPrevUp)
   {
     buttonState++;
     display.showNumberDec(buttonState);
   }
-  buttonSeqPrevUp = (digitalRead(8) == LOW);
+  buttonSeqPrevUp = (digitalRead(4) == LOW);
 
-  if (digitalRead(9) == LOW && !buttonSeqPrevDown)
+  if (digitalRead(5) == LOW && !buttonSeqPrevDown)
   {
     buttonState--;
     display.showNumberDec(buttonState);
   }
-  buttonSeqPrevDown = (digitalRead(9) == LOW);
+  buttonSeqPrevDown = (digitalRead(5) == LOW);
 
   if (digitalRead(4) == LOW)
   {
@@ -151,12 +146,7 @@ void loop()
 #endif
   }
 
-  bool buttonBanniere = (digitalRead(10) == LOW);
-  if (buttonBanniere && !buttonBannierePrev)
-  {
-    message.cmdServoBanniere = !message.cmdServoBanniere; // Lacher la banniere
-  }
-  buttonBannierePrev = buttonBanniere;
+  message.cmdServoBanniere = (digitalRead(7) == LOW) || (message.x > 700); // Lacher la banniere
 
   if (digitalRead(7) == LOW)
   {
@@ -209,6 +199,7 @@ void loop()
     message.cmdPompe = false;
     message.ascPlanche = 0;
     message.cmdVanne = false;
+    message.ascPlanche = 4500;
     break;
   case 2: // descente de planche du haut
     message.cmdPompe = true;
@@ -244,6 +235,7 @@ void loop()
   case 10: // lache la planche du haut 2
     message.cmdVanne = false;
     buttonState = 1;
+    display.showNumberDec(buttonState);
     break;
   }
 
