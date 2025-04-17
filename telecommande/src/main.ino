@@ -6,7 +6,6 @@ TM1637Display display(3, 2); // CLK, DIO
 
 SerialTransfer transfer;
 uint8_t buttonState;
-bool buttonBannierePrev;
 
 bool buttonSeqPrevUp;
 bool buttonSeqPrevDown;
@@ -30,7 +29,7 @@ struct __attribute__((packed)) STRUCT
 
 int16_t compteur = 0;
 int16_t afficheur = 0;
-int16_t afficheurPrev = 0;
+int16_t afficheurPrev = 1;
 
 // #define DEBUG
 
@@ -107,16 +106,7 @@ void loop()
   }
   buttonSeqPrevDown = (digitalRead(9) == LOW);
 
-  // Banniere
-  bool buttonBanniere = (digitalRead(7) == LOW);
-  if (buttonBanniere && !buttonBannierePrev)
-    {
-#ifdef DEBUG
-    Serial.println("banniere");
-#endif
-    message.cmdServoBanniere = !message.cmdServoBanniere; // Lacher la banniere
-  }
-  buttonBannierePrev = buttonBanniere;
+  message.cmdServoBanniere = (digitalRead(7) == LOW); // banniere
 
   switch (buttonState)
   {
@@ -173,14 +163,6 @@ void loop()
   {
     compteur = 0;
   }
-
-#ifndef DEBUG
-  // Send the message using SerialTransfer
-  uint16_t sendSize = 0;
-  sendSize = transfer.txObj(message, sendSize);
-  transfer.sendData(sendSize);
-#endif
-
   afficheur = buttonState * 1000 + compteur;
 
   if (afficheur != afficheurPrev)
@@ -189,6 +171,14 @@ void loop()
     delay(50);
   }
   afficheurPrev = afficheur;
+
+#ifndef DEBUG
+  // Send the message using SerialTransfer
+  uint16_t sendSize = 0;
+  sendSize = transfer.txObj(message, sendSize);
+  transfer.sendData(sendSize);
+#endif
+
 
   delay(50);
 }
