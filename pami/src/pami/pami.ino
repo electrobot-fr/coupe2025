@@ -24,7 +24,7 @@ const int switchPin2 = A1; // choix équipe bleue ou jaune, correspond à Hold s
 
 // int chemin2[] = {0, 100, 132, 100, 0, 100, 0, 100, 0, 300, 264}; // Tableau des positions//
 
-#define PAMISUPERSTAR
+#define PAMILOIN
 
 #ifdef PAMISUPERSTAR
 int chemin2[] = {0, -1150, 0,-80, 365}; 
