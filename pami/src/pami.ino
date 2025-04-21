@@ -37,7 +37,7 @@ long attente = 85000;
 #ifdef PAMILOIN
 int chemin2[] = {0,-200, -40, -800, 0, -900}; 
 int chemin3[] = { 0, 200, 0, 800, 65, 900};// Tableau des positions
-long attente = 85000;
+long attente = 88000;
 //long attente = 1000;
 #endif
 

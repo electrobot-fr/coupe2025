@@ -122,7 +122,7 @@ void loop()
     break;
   case 2: // descente de planche du haut
     message.cmdPompe = true;
-    message.ascPlanche = 5100;
+    message.ascPlanche = 5150;
     break;
   case 3: // remontée de la planche du haut
     message.ascPlanche = 0;
