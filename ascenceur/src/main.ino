@@ -69,7 +69,7 @@ void setup() {
   servoGlissGauche.setSpeed(80);
   servoGlissDroit.setSpeed(80);
 
-  servoGlissDroit.write(80);
+  servoGlissDroit.write(95);
   servoGlissGauche.write(100);
   servoAscDroit.write(150);
   servoAscGauche.write(60);
@@ -134,10 +134,10 @@ void loop() {
     }
 
     if (message.cmdGliss) {
-      servoGlissDroit.startEaseTo(25);
-      servoGlissGauche.startEaseTo(150);
+      servoGlissDroit.startEaseTo(15);
+      servoGlissGauche.startEaseTo(170);
     } else {
-      servoGlissDroit.startEaseTo(80);
+      servoGlissDroit.startEaseTo(95);
       servoGlissGauche.startEaseTo(100);
     }
 
